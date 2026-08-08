@@ -46,7 +46,7 @@ import { expect } from 'storybook/test';
 export const CssCheck = Template.bind({});
 CssCheck.args = Default.args;
 CssCheck.play = async ({ canvas }) => {
-  const btn = await canvas.getByTestId('puzzle-question')?.querySelector('[data-test="puzzle-submit"]') || canvas.getByRole('button', { name: /enviar/i });
+  const btn = canvas.getByRole('button', { name: /enviar/i });
   // espera a que el botón esté visible
   await expect(btn).toBeVisible();
   const bg = getComputedStyle(btn).backgroundColor;
