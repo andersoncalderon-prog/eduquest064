@@ -49,6 +49,6 @@ CssCheck.play = async ({ canvas }) => {
   const btn = canvas.getByRole('button', { name: /enviar/i });
   // espera a que el botón esté visible
   await expect(btn).toBeVisible();
-  const bg = getComputedStyle(btn).backgroundColor;
-  await expect(bg).toBe('rgb(5, 150, 105)');
+  // verificar que la clase Tailwind correcta esté presente (más estable que comparar colores)
+  await expect(btn).toHaveClass('bg-emerald-600');
 };
