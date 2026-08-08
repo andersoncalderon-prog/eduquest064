@@ -8,16 +8,15 @@ import { Play, Plus, Minus, X, Divide, Heart, Star, RotateCcw, Home, Trophy, Spa
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypNEzvRSkBnLJxWwzOa8KMirabo2lCT-8mCvMGkNBR08C6pQMJsvm7Ui_BTV0VdFoK/exec";
 
 // --- CONFIGURACIÓN DEL SERVIDOR EN TIEMPO REAL (FIREBASE) ---
-// 👇 PROFESOR: REEMPLACE LOS VALORES DE AQUÍ CON LOS DE SU PROPIO FIREBASE 👇
+// Use Vite env vars para configuración de producción y evita exponer secretos en el repositorio.
 const firebaseConfig = {
-  apiKey: "AIzaSyCvRa0Wol4mk84TcnIkPnnmAs_-1Uytosg",
-  authDomain: "eduquest-d437f.firebaseapp.com",
-  projectId: "eduquest-d437f",
-  storageBucket: "eduquest-d437f.firebasestorage.app",
-  messagingSenderId: "504574198544",
-  appId: "1:504574198544:web:46e85b8a28315f34b6db95"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCvRa0Wol4mk84TcnIkPnnmAs_-1Uytosg",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "eduquest-d437f.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "eduquest-d437f",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "eduquest-d437f.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "504574198544",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:504574198544:web:46e85b8a28315f34b6db95"
 };
-
 
 const APP_ID = 'eduquest-064';
 

@@ -20,6 +20,22 @@ If you are developing a production application, we recommend using TypeScript wi
 - Wireframes: `docs/wireframes/puzzle-wireframes.md`
 - Data model and multiplayer flow: `docs/models/eduquest-data-model.md`
 - Project plan and backlog: `docs/project-plan.md`
+- Firebase security guide: `docs/firestore-security.md`
+
+## Firebase configuration
+
+Create a `.env.local` file in the project root with your Firebase settings:
+
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+This file is ignored by git, so your secrets stay private.
 
 ## Useful scripts
 
