@@ -1,52 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
+/**
+ * PuzzleQuestion
+ * Props:
+ * - question: { id, fragments: string[] }
+ * - onSubmit: function(answerString | { answer, timeTakenMs })
+ *
+ * Componente simple que permite reordenar fragmentos mediante drag&drop
+ * y mide el tiempo desde que se monta hasta el envío para cálculo de bonus.
+ */
 export default function PuzzleQuestion({ question, onSubmit }) {
   const fragments = question.fragments || [];
-  const [shuffled, setShuffled] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [items, setItems] = useState([]);
+  const startRef = useRef(Date.now());
 
   useEffect(() => {
+    // barajar
     const s = [...fragments].sort(() => Math.random() - 0.5);
-    setShuffled(s);
-    setSelected([]);
+    setItems(s);
+    startRef.current = Date.now();
   }, [question.id]);
 
-  const pick = (i) => {
-    const value = shuffled[i];
-    setSelected(prev => [...prev, value]);
-    setShuffled(prev => prev.map((v, idx) => idx === i ? null : v));
-  };
-
-  const removeAt = (i) => {
-    const value = selected[i];
-    setSelected(prev => prev.filter((_, idx) => idx !== i));
-    setShuffled(prev => {
-      const idx = prev.findIndex(v => v === null);
-      if (idx === -1) return [...prev, value];
-      const copy = [...prev]; copy[idx] = value; return copy;
-    });
+  // Drag and drop handlers
+  const dragIndexRef = useRef(null);
+  const onDragStart = (e, idx) => { dragIndexRef.current = idx; e.dataTransfer?.setData('text/plain', 'drag'); };
+  const onDragOver = (e) => { e.preventDefault(); };
+  const onDrop = (e, idx) => {
+    e.preventDefault();
+    const from = dragIndexRef.current;
+    if (from === null || from === undefined) return;
+    const copy = [...items];
+    const [moved] = copy.splice(from, 1);
+    copy.splice(idx, 0, moved);
+    setItems(copy);
+    dragIndexRef.current = null;
   };
 
   const handleSubmit = () => {
-    const answer = selected.join('||');
-    onSubmit(answer);
+    const answer = items.join('||');
+    const timeTaken = Date.now() - (startRef.current || Date.now());
+    if (onSubmit) onSubmit({ answer, timeTakenMs: timeTaken });
   };
 
   return (
     <div className="flex flex-col items-center gap-4" data-test="puzzle-question">
       <div className="text-lg text-slate-800 font-bold mb-2">Arregla los fragmentos en el orden correcto</div>
       <div className="w-full flex flex-wrap gap-2 justify-center" data-test="puzzle-fragments">
-        {shuffled.map((f, i) => (
-          <button key={i} data-test="puzzle-fragment" disabled={!f} onClick={() => pick(i)} className={`px-3 py-2 rounded-full bg-white border ${!f ? 'opacity-30 cursor-not-allowed' : 'hover:bg-orange-50'}`}>
-            {f || ''}
+        {items.map((f, i) => (
+          <button
+            key={i}
+            draggable
+            onDragStart={(e)=>onDragStart(e,i)}
+            onDragOver={onDragOver}
+            onDrop={(e)=>onDrop(e,i)}
+            data-test="puzzle-fragment"
+            className={`px-3 py-2 rounded-full bg-white border hover:bg-orange-50`}
+          >
+            {f}
           </button>
         ))}
       </div>
 
       <div className="w-full bg-white/10 p-3 rounded-lg min-h-[56px] flex items-center gap-2 justify-center" data-test="puzzle-selected">
-        {selected.length === 0 ? <span className="text-xs text-white/60">Fragmentos seleccionados...</span> : selected.map((s, i) => (
-          <button key={i} data-test="puzzle-selected-fr" onClick={() => removeAt(i)} className="px-2 py-1 rounded bg-emerald-100 text-emerald-800">{s}</button>
-        ))}
+        {items.length === 0 ? <span className="text-xs text-white/60">Fragmentos...</span> : (
+          <div className="text-xs text-white/60">Orden actual: {items.join(' ')}</div>
+        )}
       </div>
 
       <div className="flex gap-3">

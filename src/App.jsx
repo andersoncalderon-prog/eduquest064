@@ -769,8 +769,17 @@ export default function App() {
 
     try {
       const nextQ = (me.currentQ || 0) + 1;
-      // Normalizar ambas respuestas a string para comparaciones seguras
-      const normalizedAns = String(ans).trim();
+      // soportar objetos { answer, timeTakenMs } desde preguntas puzzle
+      let normalizedAns = '';
+      let timeBonus = 0;
+      if (ans && typeof ans === 'object' && 'answer' in ans) {
+        normalizedAns = String(ans.answer).trim();
+        const t = Number(ans.timeTakenMs || 0);
+        // bonus simple: hasta 5s da bonus decreciente (2 puntos por segundo rápido)
+        timeBonus = Math.max(0, Math.ceil((5000 - t) / 1000)) * 2;
+      } else {
+        normalizedAns = String(ans).trim();
+      }
       const normalizedCorrect = String(q.answer).trim();
       if (devMode) {
         // Actualizar batalla simulada en localStorage
@@ -779,7 +788,7 @@ export default function App() {
         const data = raw ? JSON.parse(raw) : activeBattle;
         if (normalizedAns === normalizedCorrect) {
           playCorrectSound(isMuted);
-          data[playerKey].score = (data[playerKey].score || 0) + 10;
+          data[playerKey].score = (data[playerKey].score || 0) + 10 + timeBonus;
           data[playerKey].currentQ = nextQ;
         } else {
           playWrongSound(isMuted);
@@ -804,7 +813,7 @@ export default function App() {
       } else {
         if (normalizedAns === normalizedCorrect) {
           playCorrectSound(isMuted);
-          await updateDoc(ref, { [`${playerKey}.score`]: (me.score || 0) + 10, [`${playerKey}.currentQ`]: nextQ });
+          await updateDoc(ref, { [`${playerKey}.score`]: (me.score || 0) + 10 + timeBonus, [`${playerKey}.currentQ`]: nextQ });
         } else {
           playWrongSound(isMuted);
           await updateDoc(ref, { [`${playerKey}.currentQ`]: nextQ });
