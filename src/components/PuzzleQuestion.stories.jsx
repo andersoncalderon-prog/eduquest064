@@ -1,10 +1,10 @@
 import React from 'react';
 import PuzzleQuestion from './PuzzleQuestion';
-import { action } from '@storybook/addon-actions';
 
 export default {
   title: 'Components/PuzzleQuestion',
   component: PuzzleQuestion,
+  tags: ['ai-generated', 'needs-work'],
   argTypes: {
     fragmentsText: { control: 'text', name: 'Fragments (comma-separated)' },
     id: { control: 'text' },
@@ -21,7 +21,7 @@ function buildQuestionFromArgs({ id = 'puzzle-1', fragmentsText = '' }) {
 
 const Template = (args) => {
   const question = buildQuestionFromArgs(args);
-  return <PuzzleQuestion question={question} onSubmit={action('submit')} />;
+  return <PuzzleQuestion question={question} onSubmit={(p)=>console.log('submit',p)} />;
 };
 
 export const Default = Template.bind({});
@@ -38,3 +38,17 @@ LongFragments.args = {
 
 export const Empty = Template.bind({});
 Empty.args = { id: 'empty', fragmentsText: '' };
+
+// CssCheck: valida que la hoja global de Tailwind esté cargada verificando
+// el color de fondo del botón `Enviar` (`bg-emerald-600` -> rgb(5,150,105)).
+import { expect } from 'storybook/test';
+
+export const CssCheck = Template.bind({});
+CssCheck.args = Default.args;
+CssCheck.play = async ({ canvas }) => {
+  const btn = await canvas.getByTestId('puzzle-question')?.querySelector('[data-test="puzzle-submit"]') || canvas.getByRole('button', { name: /enviar/i });
+  // espera a que el botón esté visible
+  await expect(btn).toBeVisible();
+  const bg = getComputedStyle(btn).backgroundColor;
+  await expect(bg).toBe('rgb(5, 150, 105)');
+};
