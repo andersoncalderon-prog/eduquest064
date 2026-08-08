@@ -52,6 +52,24 @@ KeyboardAccessible.play = async ({ canvas }) => {
   await expect(fragments[0]).toHaveAttribute('aria-pressed', 'false');
 };
 
+export const InteractiveTouch = Template.bind({});
+InteractiveTouch.args = Default.args;
+InteractiveTouch.parameters = {
+  docs: {
+    storyDescription: 'Ejemplo interactivo que selecciona un fragmento y mueve su posición.',
+  },
+};
+InteractiveTouch.play = async ({ canvas }) => {
+  const fragments = await canvas.getAllByTestId('puzzle-fragment');
+  await expect(fragments[0]).toBeVisible();
+  await fragments[0].click();
+  await expect(fragments[0]).toHaveAttribute('aria-pressed', 'true');
+  await fragments[1].click();
+  await expect(fragments[0]).toHaveAttribute('aria-pressed', 'false');
+  const submit = await canvas.getByRole('button', { name: /enviar/i });
+  await expect(submit).toBeVisible();
+};
+
 // CssCheck: valida que la hoja global de Tailwind esté cargada verificando
 // el color de fondo del botón `Enviar` (`bg-emerald-600` -> rgb(5,150,105)).
 import { expect } from 'storybook/test';
