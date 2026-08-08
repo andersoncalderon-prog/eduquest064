@@ -39,6 +39,19 @@ LongFragments.args = {
 export const Empty = Template.bind({});
 Empty.args = { id: 'empty', fragmentsText: '' };
 
+export const KeyboardAccessible = Template.bind({});
+KeyboardAccessible.args = Default.args;
+KeyboardAccessible.parameters = {
+  docs: {
+    storyDescription: 'Reordenar fragmentos con teclado y selector táctil: seleccionado + clic en otro bloque.',
+  },
+};
+KeyboardAccessible.play = async ({ canvas }) => {
+  const fragments = await canvas.getAllByTestId('puzzle-fragment');
+  await expect(fragments[0]).toHaveAttribute('tabindex', '0');
+  await expect(fragments[0]).toHaveAttribute('aria-pressed', 'false');
+};
+
 // CssCheck: valida que la hoja global de Tailwind esté cargada verificando
 // el color de fondo del botón `Enviar` (`bg-emerald-600` -> rgb(5,150,105)).
 import { expect } from 'storybook/test';
